@@ -76,7 +76,7 @@ const Register = () => {
     try {
       await registerUser({ ...formData, otp });
       setIsSuccess(true);
-      setTimeout(() => navigate("/"), 2000);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       setServerError(err.response?.data?.error || "Something went wrong.");
     }

@@ -173,8 +173,9 @@ function DirectoryView() {
       loadDirectory();
     };
 
-    xhr.onerror = () => {
+    xhr.onerror = (error) => {
       setErrorMessage("Something went wrong during the upload!");
+      console.log(error.message);
       // Remove temp item from the list
       setFilesList((prev) => prev.filter((f) => f.id !== item.id));
       setUploadItem(null);
