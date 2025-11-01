@@ -9,6 +9,8 @@ function ContextMenu({ item, isUploadingItem }) {
     BASE_URL,
   } = useDirectoryContext();
 
+  const newBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
+
   const menuClass =
     "absolute bg-white border border-blue-400 shadow-md rounded text-sm z-50 right-2 top-4/5 overflow-hidden";
   const itemClass = "px-4 py-2 hover:bg-blue-100 cursor-pointer";
@@ -47,7 +49,7 @@ function ContextMenu({ item, isUploadingItem }) {
       <div
         className={itemClass}
         onClick={() =>
-          (window.location.href = `http://localhost:4000/file/${item.id}?action=download`)
+          (window.location.href = `${newBaseUrl}/file/${item.id}?action=download`)
         }
       >
         Download
