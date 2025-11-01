@@ -50,7 +50,6 @@ function DirectoryView() {
   const openDetailsPopup = (item) => setDetailsItem(item);
   const closeDetailsPopup = () => setDetailsItem(null);
 
-  const newBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL;
 
   const loadDirectory = async () => {
     try {
@@ -104,7 +103,7 @@ function DirectoryView() {
 
   function handleRowClick(type, id) {
     if (type === "directory") navigate(`/directory/${id}`);
-    else window.location.href = `${newBaseUrl}/file/${id}`;
+    else window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/file/${id}`;
   }
 
   async function handleFileSelect(e) {
