@@ -324,11 +324,12 @@ function DirectoryView() {
         handleSelectAll,
       }}
     >
-      <div className="min-h-screen bg-gray-50 p-4">
+      {/* CHANGED: Removed outer padding since sidebar handles spacing */}
+      <div className="min-h-screen bg-gray-50">
         {errorMessage &&
           errorMessage !==
             "Directory not found or you do not have access to it!" && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mx-4 mt-4 lg:mx-6 lg:mt-6">
               {errorMessage}
             </div>
           )}
@@ -343,6 +344,14 @@ function DirectoryView() {
             errorMessage ===
             "Directory not found or you do not have access to it!"
           }
+          selectedItems={selectedItems}
+          onSelectAll={handleSelectAll}
+          allSelected={
+            selectedItems.size === combinedItems.length &&
+            combinedItems.length > 0
+          }
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
 
         {showCreateDirModal && (
@@ -371,7 +380,7 @@ function DirectoryView() {
         {combinedItems.length === 0 ? (
           errorMessage ===
           "Directory not found or you do not have access to it!" ? (
-            <div className="text-center py-16">
+            <div className="text-center py-16 mx-4 lg:mx-6">
               <div className="text-gray-400 text-lg mb-2">
                 Directory not found
               </div>
@@ -380,7 +389,7 @@ function DirectoryView() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-16">
+            <div className="text-center py-16 mx-4 lg:mx-6">
               <div className="text-gray-400 text-lg mb-2">
                 This folder is empty
               </div>
