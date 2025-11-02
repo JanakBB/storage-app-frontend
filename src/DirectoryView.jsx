@@ -1,4 +1,3 @@
-// QUICK SAFE UPDATE - Just replace your current DirectoryView.jsx with this:
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DirectoryHeader from "./components/DirectoryHeader";
@@ -38,6 +37,10 @@ function DirectoryView() {
   const [renameId, setRenameId] = useState(null);
   const [renameValue, setRenameValue] = useState("");
 
+  // NEW STATES FOR GOOGLE DRIVE FEATURES
+  const [viewMode, setViewMode] = useState("grid");
+  const [selectedItems, setSelectedItems] = useState(new Set());
+
   const fileInputRef = useRef(null);
 
   // Single-file upload state
@@ -66,6 +69,7 @@ function DirectoryView() {
   useEffect(() => {
     loadDirectory();
     setActiveContextMenu(null);
+    setSelectedItems(new Set()); // Clear selection when directory changes
   }, [dirId]);
 
   function getFileIcon(filename) {
@@ -101,7 +105,22 @@ function DirectoryView() {
     }
   }
 
-  function handleRowClick(type, id) {
+  // UPDATED handleRowClick to support multi-select
+  function handleRowClick(type, id, event) {
+    // If shift key is pressed for multi-select
+    if (event?.shiftKey) {
+      event.preventDefault();
+      const newSelected = new Set(selectedItems);
+      if (newSelected.has(id)) {
+        newSelected.delete(id);
+      } else {
+        newSelected.add(id);
+      }
+      setSelectedItems(newSelected);
+      return;
+    }
+
+    // Normal click behavior
     if (type === "directory") {
       navigate(`/directory/${id}`);
     } else {
@@ -109,6 +128,29 @@ function DirectoryView() {
       window.location.href = `${base}/file/${id}`;
     }
   }
+
+  // Selection handlers
+  const handleSelectItem = (id) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  const handleSelectAll = () => {
+    const allIds = [
+      ...directoriesList.map((d) => d.id),
+      ...filesList.map((f) => f.id),
+    ];
+    if (selectedItems.size === allIds.length) {
+      setSelectedItems(new Set());
+    } else {
+      setSelectedItems(new Set(allIds));
+    }
+  };
 
   async function handleFileSelect(e) {
     const file = e.target.files?.[0];
@@ -200,6 +242,7 @@ function DirectoryView() {
       if (item.isDirectory) await deleteDirectory(item.id);
       else await deleteFile(item.id);
       setDeleteItem(null);
+      setSelectedItems(new Set());
       loadDirectory();
     } catch (err) {
       setErrorMessage(err.response?.data?.error || err.message);
@@ -274,13 +317,18 @@ function DirectoryView() {
         setDeleteItem,
         openRenameModal,
         openDetailsPopup,
+        viewMode,
+        setViewMode,
+        selectedItems,
+        handleSelectItem,
+        handleSelectAll,
       }}
     >
       <div className="min-h-screen bg-gray-50 p-4">
         {errorMessage &&
           errorMessage !==
             "Directory not found or you do not have access to it!" && (
-            <div className="error-message text-red-500 text-xs text-center mt-1">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
               {errorMessage}
             </div>
           )}
@@ -323,17 +371,31 @@ function DirectoryView() {
         {combinedItems.length === 0 ? (
           errorMessage ===
           "Directory not found or you do not have access to it!" ? (
-            <p className="text-center text-gray-600 mt-4 italic">
-              Directory not found or you do not have access to it!
-            </p>
+            <div className="text-center py-16">
+              <div className="text-gray-400 text-lg mb-2">
+                Directory not found
+              </div>
+              <div className="text-gray-500 text-sm">
+                You might not have access to this directory
+              </div>
+            </div>
           ) : (
-            <p className="text-center text-gray-600 mt-4 italic">
-              This folder is empty. Upload a file or create a folder to see some
-              data.
-            </p>
+            <div className="text-center py-16">
+              <div className="text-gray-400 text-lg mb-2">
+                This folder is empty
+              </div>
+              <div className="text-gray-500 text-sm">
+                Upload files or create folders to get started
+              </div>
+            </div>
           )
         ) : (
-          <DirectoryList items={combinedItems} />
+          <DirectoryList
+            items={combinedItems}
+            viewMode={viewMode}
+            selectedItems={selectedItems}
+            onSelectItem={handleSelectItem}
+          />
         )}
 
         {deleteItem && (

@@ -1,19 +1,26 @@
-// DirectoryItem.js
+import { useState } from "react";
 import {
-  FaFolder,
-  FaFilePdf,
-  FaFileImage,
-  FaFileVideo,
-  FaFileArchive,
-  FaFileCode,
-  FaFileAlt,
-} from "react-icons/fa";
-import { BsThreeDotsVertical } from "react-icons/bs";
+  Folder,
+  FileText,
+  Image,
+  Film,
+  Archive,
+  Code,
+  File,
+  MoreVertical,
+  Check,
+} from "lucide-react";
 import ContextMenu from "./ContextMenu";
 import { useDirectoryContext } from "../context/DirectoryContext";
 import { formatSize } from "./DetailsPopup";
 
-function DirectoryItem({ item, uploadProgress }) {
+function DirectoryItem({
+  item,
+  uploadProgress,
+  viewMode = "grid",
+  isSelected = false,
+  onSelect,
+}) {
   const {
     handleRowClick,
     activeContextMenu,
@@ -22,72 +29,225 @@ function DirectoryItem({ item, uploadProgress }) {
     isUploading,
   } = useDirectoryContext();
 
-  function renderFileIcon(iconString) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  function renderFileIcon(iconString, size = 20) {
+    const className = "flex-shrink-0";
+
     switch (iconString) {
       case "pdf":
-        return <FaFilePdf />;
+        return <FileText size={size} className={`${className} text-red-500`} />;
       case "image":
-        return <FaFileImage />;
+        return <Image size={size} className={`${className} text-green-500`} />;
       case "video":
-        return <FaFileVideo />;
+        return <Film size={size} className={`${className} text-purple-500`} />;
       case "archive":
-        return <FaFileArchive />;
+        return (
+          <Archive size={size} className={`${className} text-yellow-500`} />
+        );
       case "code":
-        return <FaFileCode />;
+        return <Code size={size} className={`${className} text-pink-500`} />;
       case "alt":
       default:
-        return <FaFileAlt />;
+        return <File size={size} className={`${className} text-gray-500`} />;
     }
   }
 
   const isUploadingItem = item.id.startsWith("temp-");
+  const modifiedDate = new Date(
+    item.updatedAt || item.createdAt
+  ).toLocaleDateString();
+
+  if (viewMode === "grid") {
+    return (
+      <div
+        className={`relative bg-white rounded-lg border-2 transition-all duration-200 cursor-pointer group ${
+          isSelected
+            ? "border-blue-500 bg-blue-50"
+            : "border-gray-200 hover:border-blue-300 hover:shadow-md"
+        }`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={(e) => {
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            onSelect?.(item.id);
+          } else if (!activeContextMenu && !isUploading) {
+            handleRowClick(item.isDirectory ? "directory" : "file", item.id, e);
+          }
+        }}
+        onContextMenu={(e) => handleContextMenu(e, item.id)}
+      >
+        <div
+          className={`absolute top-2 left-2 z-10 w-5 h-5 border-2 rounded transition-all duration-200 ${
+            isSelected
+              ? "bg-blue-500 border-blue-500"
+              : isHovered
+              ? "border-gray-400 bg-white"
+              : "border-gray-300 bg-white opacity-0 group-hover:opacity-100"
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect?.(item.id);
+          }}
+        >
+          {isSelected && <Check size={12} className="text-white" />}
+        </div>
+
+        <button
+          className={`absolute top-2 right-2 z-10 p-1 rounded-full transition-all duration-200 ${
+            isHovered || activeContextMenu === item.id
+              ? "opacity-100 bg-white shadow-sm"
+              : "opacity-0"
+          } hover:bg-gray-100`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleContextMenu(e, item.id);
+          }}
+        >
+          <MoreVertical size={14} className="text-gray-600" />
+        </button>
+
+        <div className="p-4">
+          <div className="flex justify-center mb-3">
+            <div className="p-3 rounded-xl bg-gray-50 group-hover:bg-gray-100 transition-colors">
+              {item.isDirectory ? (
+                <Folder size={32} className="text-blue-500" />
+              ) : (
+                renderFileIcon(getFileIcon(item.name), 32)
+              )}
+            </div>
+          </div>
+
+          <h3 className="font-medium text-sm text-gray-900 text-center mb-2 line-clamp-2 leading-tight">
+            {item.name}
+          </h3>
+
+          <div className="text-xs text-gray-500 text-center space-y-1">
+            <div>{modifiedDate}</div>
+            {!item.isDirectory && <div>{formatSize(item.size)}</div>}
+          </div>
+
+          {isUploadingItem && (
+            <div className="mt-3">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="h-2 rounded-full transition-all duration-300"
+                  style={{
+                    width: `${uploadProgress}%`,
+                    backgroundColor:
+                      uploadProgress === 100 ? "#10b981" : "#3b82f6",
+                  }}
+                ></div>
+              </div>
+              <div className="text-xs text-gray-500 text-center mt-1">
+                {Math.floor(uploadProgress)}%
+              </div>
+            </div>
+          )}
+        </div>
+
+        {activeContextMenu === item.id && (
+          <div className="absolute top-10 right-2 z-20">
+            <ContextMenu item={item} isUploadingItem={isUploadingItem} />
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
-      className="flex flex-col justify-between px-3 py-1 hover:bg-blue-100 border border-gray-300 hover:border-blue-500 rounded cursor-pointer relative"
-      onClick={() =>
-        !(activeContextMenu || isUploading) &&
-        handleRowClick(item.isDirectory ? "directory" : "file", item.id)
-      }
+      className={`grid grid-cols-12 gap-4 px-4 py-3 items-center transition-colors cursor-pointer group ${
+        isSelected ? "bg-blue-50" : "hover:bg-gray-50"
+      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={(e) => {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          onSelect?.(item.id);
+        } else if (!activeContextMenu && !isUploading) {
+          handleRowClick(item.isDirectory ? "directory" : "file", item.id, e);
+        }
+      }}
       onContextMenu={(e) => handleContextMenu(e, item.id)}
     >
-      <div
-        className="flex justify-between"
-        title={`Size: ${formatSize(item.size)}\nCreated At: ${new Date(item.createdAt).toLocaleString()}`}
-      >
-        <div className="flex items-center gap-2">
-          {item.isDirectory ? (
-            <FaFolder className="text-amber-500 text-lg" />
-          ) : (
-            renderFileIcon(getFileIcon(item.name))
-          )}
-          <span className="text-gray-800 truncate">{item.name}</span>
-        </div>
+      <div className="col-span-1">
         <div
-          className="text-gray-600 hover:text-gray-800 cursor-pointer hover:bg-blue-200 p-2 rounded-full"
-          onClick={(e) => handleContextMenu(e, item.id)}
+          className={`w-4 h-4 border-2 rounded transition-all duration-200 flex items-center justify-center ${
+            isSelected
+              ? "bg-blue-500 border-blue-500"
+              : isHovered
+              ? "border-gray-400"
+              : "border-gray-300 opacity-0 group-hover:opacity-100"
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect?.(item.id);
+          }}
         >
-          <BsThreeDotsVertical />
+          {isSelected && <Check size={10} className="text-white" />}
         </div>
+      </div>
+
+      <div className="col-span-5 flex items-center gap-3 min-w-0">
+        <div className="flex-shrink-0">
+          {item.isDirectory ? (
+            <Folder size={20} className="text-blue-500" />
+          ) : (
+            renderFileIcon(getFileIcon(item.name), 20)
+          )}
+        </div>
+        <span className="text-gray-900 truncate font-medium" title={item.name}>
+          {item.name}
+        </span>
+      </div>
+
+      <div className="col-span-3 text-sm text-gray-600">
+        {item.isDirectory ? "—" : formatSize(item.size)}
+      </div>
+
+      <div className="col-span-2 text-sm text-gray-600">{modifiedDate}</div>
+
+      <div className="col-span-1 flex justify-end">
+        <button
+          className={`p-1 rounded transition-opacity duration-200 ${
+            isHovered || activeContextMenu === item.id
+              ? "opacity-100"
+              : "opacity-0"
+          } hover:bg-gray-200`}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleContextMenu(e, item.id);
+          }}
+        >
+          <MoreVertical size={16} className="text-gray-600" />
+        </button>
+
         {activeContextMenu === item.id && (
-          <ContextMenu item={item} isUploadingItem={isUploadingItem} />
+          <div className="absolute right-4 z-10">
+            <ContextMenu item={item} isUploadingItem={isUploadingItem} />
+          </div>
         )}
       </div>
+
       {isUploadingItem && (
-        <div className="px-4 relative">
-          <span
-            className={`text-xs font-medium  ${uploadProgress > 50 ? "text-gray-200" : "text-gray-600"} text-right block absolute left-1/2 top-1/2 -translate-1/2`}
-          >
-            {Math.floor(uploadProgress)}%
-          </span>
-          <div className="w-full bg-gray-200 h-4 rounded">
-            <div
-              className="h-4 rounded"
-              style={{
-                width: `${uploadProgress}%`,
-                backgroundColor: uploadProgress === 100 ? "#039203" : "#007bff",
-              }}
-            ></div>
+        <div className="col-span-12 mt-2">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-gray-200 rounded-full h-2">
+              <div
+                className="h-2 rounded-full transition-all duration-300"
+                style={{
+                  width: `${uploadProgress}%`,
+                  backgroundColor:
+                    uploadProgress === 100 ? "#10b981" : "#3b82f6",
+                }}
+              ></div>
+            </div>
+            <span className="text-xs text-gray-500 min-w-8">
+              {Math.floor(uploadProgress)}%
+            </span>
           </div>
         </div>
       )}

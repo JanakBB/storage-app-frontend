@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchUser, logoutUser, logoutAllSessions } from "../api/userApi";
 import {
-  FaFolderPlus,
-  FaUpload,
-  FaUser,
-  FaSignOutAlt,
-  FaSignInAlt,
-} from "react-icons/fa";
+  FolderPlus,
+  Upload,
+  User,
+  LogOut,
+  LogIn,
+  HardDrive,
+} from "lucide-react";
 
 function DirectoryHeader({
   directoryName,
@@ -24,8 +25,10 @@ function DirectoryHeader({
   const [userPicture, setUserPicture] = useState("");
   const [maxStorageInBytes, setMaxStorageInBytes] = useState(1073741824);
   const [usedStorageInBytes, setUsedStorageInBytes] = useState(0);
-  const usedGB = usedStorageInBytes / 1024 ** 3;
-  const totalGB = maxStorageInBytes / 1024 ** 3;
+
+  const usedGB = (usedStorageInBytes / 1024 ** 3).toFixed(2);
+  const totalGB = (maxStorageInBytes / 1024 ** 3).toFixed(0);
+  const storagePercentage = (usedStorageInBytes / maxStorageInBytes) * 100;
 
   const userMenuRef = useRef(null);
   const navigate = useNavigate();
@@ -36,6 +39,9 @@ function DirectoryHeader({
         const user = await fetchUser();
         setUserName(user.name);
         setUserEmail(user.email);
+        setUserPicture(
+          user.picture || user.avatar || user.profilePicture || ""
+        );
         setMaxStorageInBytes(user.maxStorageInBytes);
         setUsedStorageInBytes(user.usedStorageInBytes);
         setLoggedIn(true);
@@ -43,6 +49,7 @@ function DirectoryHeader({
         setLoggedIn(false);
         setUserName("Guest User");
         setUserEmail("guest@example.com");
+        setUserPicture("");
       }
     }
     loadUser();
@@ -58,6 +65,7 @@ function DirectoryHeader({
       setLoggedIn(false);
       setUserName("Guest User");
       setUserEmail("guest@example.com");
+      setUserPicture("");
       navigate("/login");
     } catch (err) {
       console.error("Logout error:", err);
@@ -72,6 +80,7 @@ function DirectoryHeader({
       setLoggedIn(false);
       setUserName("Guest User");
       setUserEmail("guest@example.com");
+      setUserPicture("");
       navigate("/login");
     } catch (err) {
       console.error("Logout all error:", err);
@@ -91,97 +100,150 @@ function DirectoryHeader({
   }, []);
 
   return (
-    <header className="flex items-center justify-between border-b border-gray-300 py-2 mb-4">
-      <h1 className="text-xl font-semibold">{directoryName}</h1>
-      <div className="flex gap-4 items-end">
-        <button
-          className="text-blue-500 hover:text-blue-700 text-xl -mb-0.5 mr-0.5 disabled:text-blue-300 disabled:cursor-not-allowed"
-          title="Create Folder"
-          onClick={onCreateFolderClick}
-          disabled={disabled}
-        >
-          <FaFolderPlus />
-        </button>
-        <button
-          className="text-blue-500 hover:text-blue-700 text-xl disabled:text-blue-300 disabled:cursor-not-allowed"
-          title="Upload Files"
-          onClick={onUploadFilesClick}
-          disabled={disabled}
-        >
-          <FaUpload />
-        </button>
-        <input
-          ref={fileInputRef}
-          id="file-upload"
-          type="file"
-          className="hidden"
-          onChange={handleFileSelect}
-        />
-        <div className="relative flex" ref={userMenuRef}>
-          <button
-            className="text-blue-500 hover:text-blue-700 text-xl"
-            title="User Menu"
-            onClick={handleUserIconClick}
-          >
-            {userPicture ? (
-              <img
-                className="w-8 h-8 rounded-full object-cover"
-                src={userPicture}
-                alt={userName}
-              />
-            ) : (
-              <FaUser />
-            )}
-          </button>
-          {showUserMenu && (
-            <div className="absolute right-0 top-4 mt-2 w-48 bg-white rounded-md shadow-md z-10 border border-gray-300 overflow-hidden">
-              {loggedIn ? (
-                <>
-                  <div className="px-3 py-2 text-sm text-gray-800">
-                    <div className="font-semibold">{userName}</div>
-                    <div className="text-xs text-gray-500">{userEmail}</div>
-                    <div className="flex flex-col text-xs mr-2 mt-2">
-                      <div className="w-40 h-1 bg-gray-300 rounded-full overflow-hidden mb-1">
-                        <div
-                          className="bg-blue-500 rounded-full h-full"
-                          style={{ width: `${(usedGB / totalGB) * 100}%` }}
-                        ></div>
-                      </div>
-                      <div className="text-xs">
-                        {usedGB.toFixed(2)} GB of {totalGB} GB used
-                      </div>
-                    </div>
-                  </div>
-                  <div className="border-t border-gray-200" />
-                  <div
-                    className="flex items-center gap-2 text-gray-700 cursor-pointer hover:bg-gray-200 px-4 py-2"
-                    onClick={handleLogout}
-                  >
-                    <FaSignOutAlt className="text-blue-600" /> Logout
-                  </div>
-                  <div
-                    className="flex items-center gap-2 text-gray-700 cursor-pointer hover:bg-gray-200 px-4 py-2"
-                    onClick={handleLogoutAll}
-                  >
-                    <FaSignOutAlt className="text-blue-600" /> Logout All
-                  </div>
-                </>
-              ) : (
-                <div
-                  className="flex items-center gap-2 text-gray-700 cursor-pointer hover:bg-gray-200 px-4 py-2"
-                  onClick={() => {
-                    navigate("/login");
-                    setShowUserMenu(false);
+    <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <HardDrive className="text-blue-600" size={24} />
+            <h1 className="text-xl font-semibold text-gray-900">
+              {directoryName}
+            </h1>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Create Folder"
+              onClick={onCreateFolderClick}
+              disabled={disabled}
+            >
+              <FolderPlus size={16} />
+              New Folder
+            </button>
+
+            <button
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title="Upload Files"
+              onClick={onUploadFilesClick}
+              disabled={disabled}
+            >
+              <Upload size={16} />
+              Upload
+            </button>
+
+            <input
+              ref={fileInputRef}
+              id="file-upload"
+              type="file"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+          </div>
+
+          <div className="relative" ref={userMenuRef}>
+            <button
+              className="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 transition-colors"
+              title="User Menu"
+              onClick={handleUserIconClick}
+            >
+              {userPicture ? (
+                <img
+                  className="w-8 h-8 rounded-full object-cover border border-gray-300"
+                  src={userPicture}
+                  alt={userName}
+                  onError={(e) => {
+                    e.target.style.display = "none";
                   }}
-                >
-                  <FaSignInAlt className="text-blue-600" /> Login
+                />
+              ) : (
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                  <User className="text-white" size={16} />
                 </div>
               )}
-            </div>
-          )}
+            </button>
+
+            {showUserMenu && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden">
+                <div className="p-4 border-b border-gray-100">
+                  <div className="flex items-center gap-3 mb-3">
+                    {userPicture ? (
+                      <img
+                        className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                        src={userPicture}
+                        alt={userName}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                        <User className="text-white" size={20} />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 truncate">
+                        {userName}
+                      </h3>
+                      <p className="text-sm text-gray-500 truncate">
+                        {userEmail}
+                      </p>
+                    </div>
+                  </div>
+
+                  {loggedIn && (
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs text-gray-600">
+                        <span>
+                          {usedGB} GB of {totalGB} GB used
+                        </span>
+                        <span>{Math.round(storagePercentage)}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${storagePercentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-2">
+                  {loggedIn ? (
+                    <>
+                      <button
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                        onClick={handleLogout}
+                      >
+                        <LogOut size={16} />
+                        Logout this device
+                      </button>
+                      <button
+                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                        onClick={handleLogoutAll}
+                      >
+                        <LogOut size={16} />
+                        Logout all devices
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                      onClick={() => {
+                        navigate("/login");
+                        setShowUserMenu(false);
+                      }}
+                    >
+                      <LogIn size={16} />
+                      Sign in
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 }
 
