@@ -235,23 +235,51 @@ function DirectoryView() {
     setUploadItem(null);
   }
 
-  // FIXED: Enhanced delete function with better error handling
+  // ENHANCED: Better delete function with specific folder error handling
   async function confirmDelete(item) {
+    console.log("🔄 Starting delete process for:", item);
+
     try {
       if (item.isDirectory) {
+        console.log("🗂️ Deleting directory:", item.id, item.name);
         await deleteDirectory(item.id);
+        console.log("✅ Directory deleted successfully");
       } else {
+        console.log("📄 Deleting file:", item.id, item.name);
         await deleteFile(item.id);
+        console.log("✅ File deleted successfully");
       }
+
       setDeleteItem(null);
       setSelectedItems(new Set());
-      await loadDirectory(); // Wait for refresh
+      console.log("🔄 Refreshing directory...");
+      await loadDirectory();
+      console.log("✅ Directory refreshed after delete");
     } catch (err) {
-      console.error("Delete error:", err);
-      setErrorMessage(
-        err.response?.data?.error || "Delete failed. Please try again."
-      );
-      setDeleteItem(null); // Close modal even on error
+      console.error("❌ Delete error:", err);
+
+      // SPECIFIC ERROR HANDLING FOR FOLDERS
+      let errorMsg =
+        err.response?.data?.error ||
+        err.message ||
+        "Delete failed. Please try again.";
+
+      // Check if it's a "folder not empty" error
+      if (
+        errorMsg.toLowerCase().includes("empty") ||
+        errorMsg.toLowerCase().includes("not empty") ||
+        err.response?.status === 409
+      ) {
+        // 409 Conflict often used for this
+        errorMsg =
+          "Cannot delete folder: Folder is not empty. Please delete all files and subfolders first, or empty the folder before deleting.";
+      }
+
+      setErrorMessage(errorMsg);
+      setDeleteItem(null);
+
+      // Show error for longer so you can read it
+      setTimeout(() => setErrorMessage(""), 8000);
     }
   }
 
