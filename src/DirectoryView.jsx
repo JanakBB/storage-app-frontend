@@ -20,7 +20,7 @@ import {
   uploadInitiated,
 } from "./api/fileApi";
 import DetailsPopup from "./components/DetailsPopup";
-import ConfirmDeleteModal from "./components/ConfirmDeleteModel";
+import ConfirmDeleteModal from "./components/ConfirmDeleteModal"; // Fixed filename
 
 function DirectoryView() {
   const { dirId } = useParams();
@@ -188,9 +188,8 @@ function DirectoryView() {
 
       startUpload({ item: tempItem, uploadUrl: uploadSignedUrl, fileId });
     } catch (err) {
-      setErrorMessage(err.response.data.error);
+      setErrorMessage(err.response?.data?.error || "Upload failed");
       setTimeout(() => setErrorMessage(""), 3000);
-      console.log(err);
     }
   }
 
@@ -211,7 +210,7 @@ function DirectoryView() {
       if (xhr.status === 200) {
         await uploadComplete(fileId);
       } else {
-        setErrorMessage("File not uploaded!");
+        setErrorMessage("File upload failed!");
         setTimeout(() => setErrorMessage(""), 3000);
       }
       setUploadItem(null);
@@ -219,8 +218,7 @@ function DirectoryView() {
     };
 
     xhr.onerror = (error) => {
-      setErrorMessage("Something went wrong during the upload!");
-      console.log(error.message);
+      setErrorMessage("Upload failed. Please try again.");
       setFilesList((prev) => prev.filter((f) => f.id !== item.id));
       setUploadItem(null);
       setTimeout(() => setErrorMessage(""), 3000);
@@ -237,15 +235,23 @@ function DirectoryView() {
     setUploadItem(null);
   }
 
+  // FIXED: Enhanced delete function with better error handling
   async function confirmDelete(item) {
     try {
-      if (item.isDirectory) await deleteDirectory(item.id);
-      else await deleteFile(item.id);
+      if (item.isDirectory) {
+        await deleteDirectory(item.id);
+      } else {
+        await deleteFile(item.id);
+      }
       setDeleteItem(null);
       setSelectedItems(new Set());
-      loadDirectory();
+      await loadDirectory(); // Wait for refresh
     } catch (err) {
-      setErrorMessage(err.response?.data?.error || err.message);
+      console.error("Delete error:", err);
+      setErrorMessage(
+        err.response?.data?.error || "Delete failed. Please try again."
+      );
+      setDeleteItem(null); // Close modal even on error
     }
   }
 
@@ -255,9 +261,9 @@ function DirectoryView() {
       await createDirectory(dirId, newDirname);
       setNewDirname("New Folder");
       setShowCreateDirModal(false);
-      loadDirectory();
+      await loadDirectory();
     } catch (err) {
-      setErrorMessage(err.response?.data?.error || err.message);
+      setErrorMessage(err.response?.data?.error || "Failed to create folder");
     }
   }
 
@@ -278,9 +284,9 @@ function DirectoryView() {
       setRenameValue("");
       setRenameType(null);
       setRenameId(null);
-      loadDirectory();
+      await loadDirectory();
     } catch (err) {
-      setErrorMessage(err.response?.data?.error || err.message);
+      setErrorMessage(err.response?.data?.error || "Rename failed");
     }
   }
 
@@ -324,15 +330,12 @@ function DirectoryView() {
         handleSelectAll,
       }}
     >
-      {/* CHANGED: Removed outer padding since sidebar handles spacing */}
       <div className="min-h-screen bg-gray-50">
-        {errorMessage &&
-          errorMessage !==
-            "Directory not found or you do not have access to it!" && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mx-4 mt-4 lg:mx-6 lg:mt-6">
-              {errorMessage}
-            </div>
-          )}
+        {errorMessage && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mx-4 mt-4 lg:mx-6 lg:mt-6">
+            {errorMessage}
+          </div>
+        )}
 
         <DirectoryHeader
           directoryName={directoryName}
@@ -340,10 +343,7 @@ function DirectoryView() {
           onUploadFilesClick={() => fileInputRef.current.click()}
           fileInputRef={fileInputRef}
           handleFileSelect={handleFileSelect}
-          disabled={
-            errorMessage ===
-            "Directory not found or you do not have access to it!"
-          }
+          disabled={errorMessage?.includes("not found")}
           selectedItems={selectedItems}
           onSelectAll={handleSelectAll}
           allSelected={
@@ -378,8 +378,7 @@ function DirectoryView() {
         )}
 
         {combinedItems.length === 0 ? (
-          errorMessage ===
-          "Directory not found or you do not have access to it!" ? (
+          errorMessage?.includes("not found") ? (
             <div className="text-center py-16 mx-4 lg:mx-6">
               <div className="text-gray-400 text-lg mb-2">
                 Directory not found
