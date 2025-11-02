@@ -15,9 +15,9 @@ import {
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: "Janak Bahadur Bohara",
-    email: "janakcustomx@gmail.com",
-    password: "abcd",
+    name: "John Trump",
+    email: "example@gmail.com",
+    password: "abcdefgh",
   });
   const [serverError, setServerError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);

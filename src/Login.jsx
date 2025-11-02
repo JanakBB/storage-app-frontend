@@ -7,8 +7,8 @@ import { HardDrive, Shield, Mail, Lock } from "lucide-react";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: "janakcustomx@gmail.com",
-    password: "abcd",
+    email: "example@gmail.com",
+    password: "abcdefgh",
   });
   const [serverError, setServerError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
