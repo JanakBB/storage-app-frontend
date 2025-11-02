@@ -58,6 +58,13 @@ function DirectoryItem({
     item.updatedAt || item.createdAt
   ).toLocaleDateString();
 
+  // FIXED: Show proper folder info
+  const getFolderInfo = () => {
+    // If your API provides itemCount for folders, use it
+    // Otherwise show generic folder info
+    return item.itemCount ? `${item.itemCount} items` : "Folder";
+  };
+
   if (viewMode === "grid") {
     return (
       <div
@@ -125,7 +132,12 @@ function DirectoryItem({
 
           <div className="text-xs text-gray-500 text-center space-y-1">
             <div>{modifiedDate}</div>
-            {!item.isDirectory && <div>{formatSize(item.size)}</div>}
+            {/* FIXED: Show proper info for folders vs files */}
+            {item.isDirectory ? (
+              <div>{getFolderInfo()}</div>
+            ) : (
+              <div>{formatSize(item.size)}</div>
+            )}
           </div>
 
           {isUploadingItem && (
@@ -156,6 +168,7 @@ function DirectoryItem({
     );
   }
 
+  // List View
   return (
     <div
       className={`grid grid-cols-12 gap-4 px-4 py-3 items-center transition-colors cursor-pointer group ${
@@ -204,8 +217,13 @@ function DirectoryItem({
         </span>
       </div>
 
+      {/* FIXED: Size column - Show proper info for folders */}
       <div className="col-span-3 text-sm text-gray-600">
-        {item.isDirectory ? "—" : formatSize(item.size)}
+        {
+          item.isDirectory
+            ? getFolderInfo() // Show folder info
+            : formatSize(item.size) // Show file size
+        }
       </div>
 
       <div className="col-span-2 text-sm text-gray-600">{modifiedDate}</div>

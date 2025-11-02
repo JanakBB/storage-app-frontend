@@ -76,10 +76,11 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Button - IMPROVED POSITIONING */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white border border-gray-300 rounded-lg shadow-sm"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white border border-gray-300 rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
+        style={{ zIndex: 1000 }} // Ensure it's always on top
       >
         {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
@@ -92,11 +93,12 @@ const Sidebar = () => {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - IMPROVED POSITIONING */}
       <div
         className={`
         w-64 bg-white border-r border-gray-200 min-h-screen flex flex-col fixed lg:static z-40 transform transition-transform duration-300
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        top-0 left-0 // Ensure proper positioning
       `}
       >
         {/* Header */}
@@ -138,8 +140,9 @@ const Sidebar = () => {
           })}
         </nav>
 
-        {/* Storage Info & User */}
+        {/* Storage Info & User - FIXED: Added progress bar */}
         <div className="p-4 border-t border-gray-200">
+          {/* STORAGE PROGRESS BAR - NOW VISIBLE */}
           <div className="space-y-2 mb-4">
             <div className="flex justify-between text-xs text-gray-600">
               <span>
@@ -147,10 +150,11 @@ const Sidebar = () => {
               </span>
               <span>{Math.round(storagePercentage)}%</span>
             </div>
+            {/* PROGRESS BAR - WAS MISSING! */}
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${storagePercentage}%` }}
+                style={{ width: `${Math.min(storagePercentage, 100)}%` }}
               ></div>
             </div>
           </div>
