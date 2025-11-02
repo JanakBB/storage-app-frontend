@@ -112,7 +112,6 @@ function DirectoryHeader({
         {/* Left side - Title and Selection Info */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            {/* Hide icon on mobile to save space */}
             <HardDrive className="text-blue-600 hidden lg:block" size={24} />
             <h1 className="text-lg lg:text-xl font-semibold text-gray-900 truncate max-w-[150px] lg:max-w-none">
               {directoryName}
