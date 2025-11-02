@@ -50,7 +50,6 @@ function DirectoryView() {
   const openDetailsPopup = (item) => setDetailsItem(item);
   const closeDetailsPopup = () => setDetailsItem(null);
 
-
   const loadDirectory = async () => {
     try {
       const data = await getDirectoryItems(dirId);
@@ -102,8 +101,12 @@ function DirectoryView() {
   }
 
   function handleRowClick(type, id) {
-    if (type === "directory") navigate(`/directory/${id}`);
-    else window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/file/${id}`;
+    if (type === "directory") {
+      navigate(`/directory/${id}`);
+    } else {
+      const base = import.meta.env.VITE_BACKEND_BASE_URL.replace(/\/$/, "");
+      window.location.href = `${base}/file/${id}`;
+    }
   }
 
   async function handleFileSelect(e) {
