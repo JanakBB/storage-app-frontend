@@ -20,7 +20,7 @@ import {
   uploadInitiated,
 } from "./api/fileApi";
 import DetailsPopup from "./components/DetailsPopup";
-import ConfirmDeleteModal from "./components/ConfirmDeleteModal"; // Fixed filename
+import ConfirmDeleteModal from "./components/ConfirmDeleteModal";
 
 function DirectoryView() {
   const { dirId } = useParams();
@@ -235,7 +235,7 @@ function DirectoryView() {
     setUploadItem(null);
   }
 
-  // ENHANCED: Better delete function with specific folder error handling
+  // ENHANCED: Better delete function with detailed folder error handling
   async function confirmDelete(item) {
     console.log("🔄 Starting delete process for:", item);
 
@@ -258,21 +258,33 @@ function DirectoryView() {
     } catch (err) {
       console.error("❌ Delete error:", err);
 
-      // SPECIFIC ERROR HANDLING FOR FOLDERS
+      // ENHANCED ERROR HANDLING FOR FOLDERS
       let errorMsg =
         err.response?.data?.error ||
         err.message ||
         "Delete failed. Please try again.";
 
       // Check if it's a "folder not empty" error
+      const errorLower = errorMsg.toLowerCase();
       if (
-        errorMsg.toLowerCase().includes("empty") ||
-        errorMsg.toLowerCase().includes("not empty") ||
-        err.response?.status === 409
+        errorLower.includes("empty") ||
+        errorLower.includes("not empty") ||
+        errorLower.includes("contains files") ||
+        errorLower.includes("non-empty") ||
+        err.response?.status === 409 || // 409 Conflict often used for this
+        err.response?.status === 423
       ) {
-        // 409 Conflict often used for this
+        // 423 Locked
         errorMsg =
-          "Cannot delete folder: Folder is not empty. Please delete all files and subfolders first, or empty the folder before deleting.";
+          "Cannot delete folder: The folder is not empty. Please delete all files and subfolders first before deleting the folder.";
+      }
+
+      // Check for permission errors
+      if (
+        errorLower.includes("permission") ||
+        errorLower.includes("access denied")
+      ) {
+        errorMsg = "You don't have permission to delete this item.";
       }
 
       setErrorMessage(errorMsg);
@@ -361,7 +373,7 @@ function DirectoryView() {
       <div className="min-h-screen bg-gray-50">
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mx-4 mt-4 lg:mx-6 lg:mt-6">
-            {errorMessage}
+            <strong>Error:</strong> {errorMessage}
           </div>
         )}
 
