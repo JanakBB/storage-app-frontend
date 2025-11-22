@@ -21,6 +21,7 @@ import {
 } from "./api/fileApi";
 import DetailsPopup from "./components/DetailsPopup";
 import ConfirmDeleteModal from "./components/ConfirmDeleteModal";
+import { LogIn } from "lucide-react";
 
 function DirectoryView() {
   const { dirId } = useParams();
@@ -346,6 +347,10 @@ function DirectoryView() {
     ? { [uploadItem.id]: uploadItem.progress || 0 }
     : {};
 
+  const handleLoginRedirect = () => {
+    navigate("/login");
+  };
+
   return (
     <DirectoryContext.Provider
       value={{
@@ -373,7 +378,14 @@ function DirectoryView() {
       <div className="min-h-screen bg-gray-50">
         {errorMessage && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mx-4 mt-4 lg:mx-6 lg:mt-6">
-            <strong>Error:</strong> {errorMessage}
+            <strong>Error:</strong> {errorMessage}{" "}
+            <button
+              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+              onClick={handleLoginRedirect}
+            >
+              <LogIn size={16} />
+              Sign in
+            </button>
           </div>
         )}
 
