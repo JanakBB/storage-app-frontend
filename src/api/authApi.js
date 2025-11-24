@@ -17,3 +17,8 @@ export const loginWithGoogle = async (idToken) => {
   const { data } = await axiosWithCreds.post("/auth/google", { idToken });
   return data;
 };
+
+// GITHUB LOGIN — just redirects to backend
+export const loginWithGitHub = () => {
+  window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/github`;
+};
