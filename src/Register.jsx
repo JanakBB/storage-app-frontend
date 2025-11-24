@@ -261,8 +261,7 @@ const Register = () => {
         </div>
 
         {/* Google + GitHub Buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* Google */}
+        <div className="grid grid-cols-2 gap-4">
           <div className="flex justify-center">
             <GoogleLogin
               onSuccess={async (credentialResponse) => {
@@ -274,12 +273,11 @@ const Register = () => {
               onError={() => console.log("Login Failed")}
               theme="outline"
               size="large"
-              width="100%"
+              width="180px" // ← Fixed width
               shape="pill"
             />
           </div>
 
-          {/* GitHub */}
           <button
             onClick={loginWithGitHub}
             className="flex items-center justify-center gap-3 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-xl border border-gray-700 transition-all duration-200 shadow-sm hover:shadow-md"
