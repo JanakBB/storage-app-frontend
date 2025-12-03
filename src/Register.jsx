@@ -291,7 +291,7 @@ const Register = () => {
           <div className="flex justify-center w-full">
             <button
               onClick={loginWithGitHub}
-              className="w-full max-w-[320px] flex items-center justify-center cursor-pointer gap-3 px-6 py-3 bg-gray-900 hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 text-white font-medium text-[15px] rounded-lg border border-gray-700 dark:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transform hover:scale-[1.02] active:scale-[0.98] group"
+              className="w-full max-w-[320px] flex items-center justify-center cursor-pointer gap-3 px-6 py-2 bg-gray-900 hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 text-white font-medium text-[15px] rounded-lg border border-gray-700 dark:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transform hover:scale-[1.02] active:scale-[0.98] group"
             >
               <svg
                 className="w-5 h-5 transition-transform group-hover:scale-110"
