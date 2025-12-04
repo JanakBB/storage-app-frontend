@@ -165,7 +165,7 @@ const Login = () => {
                 onError={() => console.log("Google Login Failed")}
                 theme="filled_blue"
                 size="large"
-                width="324"
+                width="300"
                 shape="rectangular"
                 text="continue_with"
                 logo_alignment="left"
