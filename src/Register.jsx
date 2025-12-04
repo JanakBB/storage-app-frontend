@@ -101,10 +101,12 @@ const Register = () => {
             <HardDrive className="text-white" size={32} />
           </div>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Create Account
         </h1>
-        <p className="text-gray-600">Join Storage Drive and get started</p>
+        <p className="text-gray-600 text-sm">
+          Join Storage Drive and get started
+        </p>
       </div>
 
       {/* Registration Form */}
@@ -112,7 +114,7 @@ const Register = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[10px] font-medium text-gray-700 mb-2">
               Full Name
             </label>
             <div className="relative">
@@ -127,14 +129,14 @@ const Register = () => {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter your full name"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
+                className="text-[10px] w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               />
             </div>
           </div>
 
           {/* Email + OTP */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[10px] font-medium text-gray-700 mb-2">
               Email Address
             </label>
             <div className="relative">
@@ -149,7 +151,7 @@ const Register = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
-                className={`w-full pl-10 pr-24 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors ${
+                className={`text-[10px] w-full pl-10 pr-24 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors ${
                   serverError ? "border-red-300" : "border-gray-300"
                 }`}
               />
@@ -157,7 +159,7 @@ const Register = () => {
                 type="button"
                 onClick={handleSendOtp}
                 disabled={isSending || countdown > 0 || otpVerified}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white px-3 py-1.5 text-sm rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white text-[10px]  px-1 py-1 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isSending ? (
                   <Clock size={14} className="animate-spin" />
@@ -213,7 +215,7 @@ const Register = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[10px] font-medium text-gray-700 mb-2">
               Password
             </label>
             <div className="relative">
@@ -228,7 +230,7 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Create a password"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
+                className="text-[10px] w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               />
             </div>
           </div>
@@ -237,7 +239,7 @@ const Register = () => {
           <button
             type="submit"
             disabled={!otpVerified || isSuccess}
-            className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="text-sm w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             {isSuccess ? (
               <>
@@ -279,7 +281,7 @@ const Register = () => {
                 onError={() => console.log("Google Login Failed")}
                 theme="filled_blue"
                 size="large"
-                width="320"
+                width="auto"
                 shape="rectangular"
                 text="continue_with"
                 logo_alignment="left"
@@ -300,7 +302,7 @@ const Register = () => {
               >
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
-              <span className="transition-all duration-200 group-hover:font-medium">
+              <span className="text-sm truncate transition-all duration-200 group-hover:font-medium">
                 Sign in with GitHub
               </span>
             </button>
@@ -308,7 +310,7 @@ const Register = () => {
 
           {/* Security Note */}
           <div className="text-center mt-6">
-            <p className="text-xs text-gray-400 dark:text-gray-500">
+            <p className="text-[8px] text-gray-400 dark:text-gray-500">
               Your data is securely encrypted and protected
             </p>
           </div>
@@ -317,11 +319,11 @@ const Register = () => {
 
       {/* Login Link */}
       <div className="text-center">
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-sm">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-green-600 hover:text-green-700 font-medium transition-colors"
+            className="text-green-600 hover:text-green-700 font-medium transition-colors text-[12px]"
           >
             Sign in
           </Link>

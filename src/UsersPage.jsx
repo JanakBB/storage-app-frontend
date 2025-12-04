@@ -65,7 +65,7 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="max-w-5xl mt-10 mx-4">
+    <div className="max-w-5xl mt-15 mx-4">
       <h1 className="text-3xl font-bold mb-6">All Users</h1>
       <p>
         <b>{userName}</b>: <i>({userRole})</i>

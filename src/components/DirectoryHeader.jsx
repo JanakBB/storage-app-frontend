@@ -178,7 +178,7 @@ function DirectoryHeader({
   }, []);
 
   return (
-    <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4">
+    <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 mt-10">
       <div className="flex items-center justify-between">
         {/* Left side - Title and Selection Info */}
         <div className="flex items-center gap-4">
