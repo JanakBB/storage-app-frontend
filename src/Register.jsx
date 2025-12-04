@@ -93,7 +93,7 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-8">
+    <div className="w-full max-w-md mx-auto p-1">
       {/* Header */}
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
@@ -110,7 +110,7 @@ const Register = () => {
       </div>
 
       {/* Registration Form */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 mb-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Field */}
           <div>
@@ -281,7 +281,7 @@ const Register = () => {
                 onError={() => console.log("Google Login Failed")}
                 theme="filled_blue"
                 size="large"
-                width="auto"
+                width="324"
                 shape="rectangular"
                 text="continue_with"
                 logo_alignment="left"
