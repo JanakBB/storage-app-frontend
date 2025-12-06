@@ -151,25 +151,27 @@ const Login = () => {
         {/* Professional Auth Buttons */}
         <div className="space-y-4 max-w-sm mx-auto">
           {/* Google Login */}
-          <div className="flex justify-center w-full">
-            <div className="w-full max-w-[320px] transform transition-transform hover:scale-[1.02] active:scale-[0.98]">
-              <GoogleLogin
-                onSuccess={async (credentialResponse) => {
-                  try {
-                    await loginWithGoogle(credentialResponse.credential);
-                    navigate("/");
-                  } catch (err) {
-                    console.error("Google login failed:", err);
-                  }
-                }}
-                onError={() => console.log("Google Login Failed")}
-                theme="filled_blue"
-                size="large"
-                width="300"
-                shape="rectangular"
-                text="continue_with"
-                logo_alignment="left"
-              />
+          <div className="flex align-middle justify-center ml-2.5">
+            <div className="flex justify-center w-full">
+              <div className="w-full max-w-[320px] transform transition-transform hover:scale-[1.02] active:scale-[0.98]">
+                <GoogleLogin
+                  onSuccess={async (credentialResponse) => {
+                    try {
+                      await loginWithGoogle(credentialResponse.credential);
+                      navigate("/");
+                    } catch (err) {
+                      console.error("Google login failed:", err);
+                    }
+                  }}
+                  onError={() => console.log("Google Login Failed")}
+                  theme="filled_blue"
+                  size="large"
+                  width="300"
+                  shape="rectangular"
+                  text="continue_with"
+                  logo_alignment="left"
+                />
+              </div>
             </div>
           </div>
 
