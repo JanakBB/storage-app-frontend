@@ -27,7 +27,7 @@ function DirectoryView() {
   const { dirId } = useParams();
   const navigate = useNavigate();
 
-  const [directoryName, setDirectoryName] = useState("My Storage CI/CD");
+  const [directoryName, setDirectoryName] = useState("My  CI/CD");
   const [directoriesList, setDirectoriesList] = useState([]);
   const [filesList, setFilesList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -58,7 +58,7 @@ function DirectoryView() {
   const loadDirectory = async () => {
     try {
       const data = await getDirectoryItems(dirId);
-      setDirectoryName(dirId ? data.name : "My Storage CI/CD");
+      setDirectoryName(dirId ? data.name : "My  CI/CD");
       setDirectoriesList([...data.directories].reverse());
       setFilesList([...data.files].reverse());
     } catch (err) {
