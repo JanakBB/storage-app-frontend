@@ -44,7 +44,7 @@ jobs:
         run: |
           aws cloudfront create-invalidation \
             --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
-            --paths "/index.html" \
+            --paths "/*" \
             --query 'Invalidation.Id' --output text
 
       - name: Deployment complete
