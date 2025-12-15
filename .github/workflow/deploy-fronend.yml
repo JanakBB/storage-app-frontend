@@ -43,8 +43,9 @@ jobs:
       - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID}" \
-            --paths "/index.html"
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths "/index.html" \
+            --query 'Invalidation.Id' --output text
 
       - name: Deployment complete
         run: echo "Frontend Deployed Successfully..."
