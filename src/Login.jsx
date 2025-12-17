@@ -5,7 +5,7 @@ import { loginWithGoogle, loginWithGitHub } from "./api/authApi"; // Both Google
 import { loginUser } from "./api/userApi";
 import { HardDrive, Shield, Mail, Lock } from "lucide-react";
 
-const Login = () => {
+const LoginNew = () => {
   const [formData, setFormData] = useState({
     email: "example@gmail.com",
     password: "abcdefgh",
@@ -13,6 +13,7 @@ const Login = () => {
   const [serverError, setServerError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -36,50 +37,63 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setIsGoogleLoading(true);
+    try {
+      await loginWithGoogle(credentialResponse.credential);
+      navigate("/");
+    } catch (err) {
+      console.error("Google login failed:", err);
+      setServerError("Google login failed. Please try again.");
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    console.log("Google Login Failed");
+    setServerError("Google authentication failed.");
+  };
+
   const hasError = Boolean(serverError);
 
   return (
-    <div className="w-full max-w-md mx-auto p-1">
+    <div className="flex min-h-full flex-col justify-center px-6 py-1 lg:px-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <HardDrive className="text-white" size={32} />
-          </div>
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-        <p className="text-gray-600 text-sm">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <HardDrive className="mx-auto h-7 w-auto" size={32} />
+
+        <h1 className="mt-1 text-center text-xl/9 font-bold tracking-tight text-gray-900">
+          Welcome Back
+        </h1>
+        <p className="mt-1 text-center text-xl/9 font-bold tracking-tight text-gray-900">
           Sign in to your Storage Drive account
         </p>
       </div>
 
       {/* Main Login Card */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 mb-6">
+      <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-sm">
         {/* Email + Password Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div>
             <label
               htmlFor="email"
-              className="text-[10px] block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm/6 font-medium text-gray-900"
             >
               Email Address
             </label>
-            <div className="relative">
-              <Mail
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={20}
-              />
+            <div className="mt-2">
               <input
                 id="email"
-                name="email"
                 type="email"
+                name="email"
                 required
-                placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`text-[10px] w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  hasError ? "border-red-300" : "border-gray-300"
+                placeholder="Enter your email"
+                className={`block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
+                  serverError ? "border-red-300" : "border-gray-300"
                 }`}
               />
             </div>
@@ -87,43 +101,41 @@ const Login = () => {
 
           {/* Password */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-[10px] font-medium text-gray-700 mb-2"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <Lock
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={20}
-              />
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
+                Password
+              </label>
+              <div className="text-sm">
+                <a
+                  href="#"
+                  className="font-semibold text-indigo-600 hover:text-indigo-500"
+                >
+                  Forgot password?
+                </a>
+              </div>
+            </div>
+            <div className="mt-2">
               <input
                 id="password"
-                name="password"
                 type="password"
+                name="password"
                 required
-                placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`text-[10px] w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  hasError ? "border-red-300" : "border-gray-300"
-                }`}
+                placeholder="Create a password"
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
               />
             </div>
-            {serverError && (
-              <div className="flex items-center gap-2 mt-2 text-red-600 text-sm">
-                <Shield size={16} />
-                <span>{serverError}</span>
-              </div>
-            )}
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             {isLoading ? (
               <>
@@ -137,86 +149,65 @@ const Login = () => {
         </form>
 
         {/* Divider */}
-        <div className="relative my-8">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-gray-500 font-medium">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Professional Auth Buttons */}
-        <div className="space-y-4 max-w-sm mx-auto">
-          {/* Google Login */}
-          <div className="flex align-middle justify-center ml-2.5">
-            <div className="flex justify-center w-full">
-              <div className="w-full max-w-[320px] transform transition-transform hover:scale-[1.02] active:scale-[0.98]">
-                <GoogleLogin
-                  onSuccess={async (credentialResponse) => {
-                    try {
-                      await loginWithGoogle(credentialResponse.credential);
-                      navigate("/");
-                    } catch (err) {
-                      console.error("Google login failed:", err);
-                    }
-                  }}
-                  onError={() => console.log("Google Login Failed")}
-                  theme="filled_blue"
-                  size="large"
-                  width="300"
-                  shape="rectangular"
-                  text="continue_with"
-                  logo_alignment="left"
-                />
-              </div>
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
-          {/* GitHub Login */}
-          <div className="flex justify-center w-full">
-            <button
-              onClick={loginWithGitHub}
-              className="w-full max-w-[320px] flex items-center justify-center cursor-pointer gap-3 px-6 py-2 bg-gray-900 hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 text-white font-medium text-[15px] rounded-lg border border-gray-700 dark:border-gray-600 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transform hover:scale-[1.02] active:scale-[0.98] group"
-            >
-              <svg
-                className="w-5 h-5 transition-transform group-hover:scale-110"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-              </svg>
-              <span className="text-sm truncate transition-all duration-200 group-hover:font-medium">
-                Sign in with GitHub
-              </span>
-            </button>
-          </div>
+          {/* Professional Auth Buttons */}
+          <div className="mt-6">
+            <div className="flex items-center justify-center gap-5">
+              <div className="mt-0">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  type="icon"
+                  size="large"
+                />
+              </div>
 
-          {/* Security Note */}
-          <div className="text-center mt-6">
-            <p className="text-[8px] text-gray-400 dark:text-gray-500">
-              Your data is securely encrypted and protected
-            </p>
+              {/* GitHub Login */}
+              <button
+                onClick={loginWithGitHub}
+                type="button"
+                className="flex  items-center justify-center rounded-md bg-white px-2.5 py-3 mt-0.5 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-transparent"
+              >
+                <svg
+                  className="h-4 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Sign Up Link */}
-      <div className="text-center">
-        <p className="text-gray-600 text-sm">
-          Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="text-[12px] text-blue-600 hover:text-blue-700 font-medium transition-colors"
-          >
-            Create account
-          </Link>
-        </p>
-      </div>
+      <p className="mt-2 text-center text-sm/6 text-gray-500">
+        Don't have an account?{" "}
+        <Link
+          to="/register"
+          className="font-semibold text-indigo-600 hover:text-indigo-500"
+        >
+          Create account
+        </Link>
+      </p>
     </div>
   );
 };
 
-export default Login;
+export default LoginNew;
