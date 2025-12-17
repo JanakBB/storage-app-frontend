@@ -213,7 +213,7 @@ const RegisterNew = () => {
                   type="button"
                   onClick={handleVerifyOtp}
                   disabled={isVerifying || otpVerified}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white px-3 py-1.5 text-sm rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-600 text-white text-[10px]  px-1 py-1 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isVerifying ? (
                     <Clock size={14} className="animate-spin" />
@@ -242,14 +242,6 @@ const RegisterNew = () => {
               >
                 Password
               </label>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-semibold text-indigo-600 hover:text-indigo-500"
-                >
-                  Forgot password?
-                </a>
-              </div>
             </div>
             <div className="mt-2">
               <input
