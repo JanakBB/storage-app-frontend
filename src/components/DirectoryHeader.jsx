@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchUser, logoutUser, logoutAllSessions } from "../api/userApi";
 import {
   FolderPlus,
@@ -11,6 +11,9 @@ import {
   Grid3X3,
   List,
   Camera,
+  DollarSign,
+  Crown,
+  CloudUpload,
 } from "lucide-react";
 
 function DirectoryHeader({
@@ -182,71 +185,166 @@ function DirectoryHeader({
       <div className="flex items-center justify-between">
         {/* Left side - Title and Selection Info */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <HardDrive className="text-blue-600 hidden lg:block" size={24} />
-            <h1 className="text-lg lg:text-xl font-semibold text-gray-900 truncate max-w-[150px] lg:max-w-none">
-              {directoryName || "My Files"}
-            </h1>
+          {/* Main Title with Premium Effects */}
+          <div className="group flex items-center gap-2.5">
+            {/* Animated HardDrive Icon */}
+            <div className="relative">
+              <HardDrive
+                size={28}
+                className="text-gradient-to-br from-blue-500 to-cyan-500 lg:block hidden group-hover:rotate-12 transition-transform duration-300"
+              />
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/30 to-cyan-400/30 blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+
+            {/* Title with gradient text */}
+            <div className="relative">
+              <h1 className="text-xl lg:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 truncate max-w-[180px] lg:max-w-none animate-gradient-x">
+                {directoryName || "My Files"}
+              </h1>
+
+              {/* Subtle underline effect on hover */}
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 group-hover:w-full transition-all duration-300 rounded-full"></div>
+            </div>
           </div>
 
-          {/* Selection info */}
+          {/* Selection Info - Premium Badge */}
           {selectedItems.size > 0 && (
-            <span className="text-sm text-gray-600 bg-blue-50 px-2 py-1 rounded">
-              {selectedItems.size} selected
-            </span>
+            <div className="relative group">
+              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-cyan-500 px-3 py-1.5 rounded-full shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-200">
+                {/* Animated dot */}
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+
+                <span>{selectedItems.size}</span>
+                <span className="hidden sm:inline">selected</span>
+                <span className="sm:hidden">sel</span>
+
+                {/* Chevron indicator */}
+                <ChevronRight size={12} className="opacity-80" />
+              </span>
+
+              {/* Tooltip for selection */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                {selectedItems.size} item{selectedItems.size !== 1 ? "s" : ""}{" "}
+                selected
+              </div>
+            </div>
           )}
         </div>
 
         {/* Right side - Actions and User Menu */}
         <div className="flex items-center gap-2 lg:gap-3">
           {/* View Mode Toggle */}
-          <div className="hidden sm:flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          <div className="hidden sm:flex items-center gap-1 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-1.5 border border-gray-200 shadow-sm">
+            {/* Grid View Button - Premium Version */}
             <button
               onClick={() => onViewModeChange("grid")}
-              className={`p-1.5 rounded-md transition-colors ${
+              className={`group relative p-2.5 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
                 viewMode === "grid"
-                  ? "bg-white text-blue-600 shadow-sm"
-                  : "text-gray-600 hover:bg-white hover:text-blue-600"
+                  ? "bg-gradient-to-br from-blue-500 via-blue-600 to-cyan-500 text-white shadow-lg scale-105 ring-2 ring-blue-400/30"
+                  : "text-gray-600 hover:bg-gradient-to-br hover:from-blue-50 hover:via-cyan-50 hover:to-white hover:text-blue-700 hover:shadow-md hover:scale-105"
               }`}
               title="Grid View"
               disabled={disabled}
             >
-              <Grid3X3 size={16} />
+              {/* Active indicator dot */}
+              {viewMode === "grid" && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full animate-ping"></div>
+              )}
+
+              {/* Active glow effect */}
+              {viewMode === "grid" && (
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-xl blur-sm"></div>
+              )}
+
+              <Grid3X3
+                size={20}
+                className={`relative z-10 ${
+                  viewMode === "grid"
+                    ? "animate-bounce"
+                    : "group-hover:scale-110 group-hover:rotate-12"
+                } transition-transform`}
+              />
+
+              {/* Hover text indicator */}
+              <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Grid View
+              </span>
             </button>
+
+            {/* Divider */}
+            <div className="w-px h-6 bg-gray-300/50 mx-0.5"></div>
+
+            {/* List View Button - Premium Version */}
             <button
               onClick={() => onViewModeChange("list")}
-              className={`p-1.5 rounded-md transition-colors ${
+              className={`group relative p-2.5 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
                 viewMode === "list"
-                  ? "bg-white text-blue-600 shadow-sm"
-                  : "text-gray-600 hover:bg-white hover:text-blue-600"
+                  ? "bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 text-white shadow-lg scale-105 ring-2 ring-purple-400/30"
+                  : "text-gray-600 hover:bg-gradient-to-br hover:from-purple-50 hover:via-pink-50 hover:to-white hover:text-purple-700 hover:shadow-md hover:scale-105"
               }`}
               title="List View"
               disabled={disabled}
             >
-              <List size={16} />
+              {/* Active indicator dot */}
+              {viewMode === "list" && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-ping"></div>
+              )}
+
+              {/* Active glow effect */}
+              {viewMode === "list" && (
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-xl blur-sm"></div>
+              )}
+
+              <List
+                size={20}
+                className={`relative z-10 ${
+                  viewMode === "list"
+                    ? "animate-pulse"
+                    : "group-hover:scale-110 group-hover:-rotate-12"
+                } transition-transform`}
+              />
+
+              {/* Hover text indicator */}
+              <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                List View
+              </span>
             </button>
           </div>
 
           {/* Action Buttons */}
           <div className="flex items-center gap-1 lg:gap-2">
+            <Link to="/pricing">
+              <button
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 border-0 rounded-lg hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                title="View Pricing Plans"
+              >
+                <DollarSign size={18} className="animate-pulse" />
+                <span>PRICING</span>
+                <Crown size={16} />
+              </button>
+            </Link>
             <button
-              className="flex items-center gap-1 lg:gap-2 px-2 lg:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Create Folder"
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-cyan-500 border-0 rounded-lg hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              title="Create New Folder"
               onClick={onCreateFolderClick}
               disabled={disabled || isLoading}
             >
-              <FolderPlus size={16} />
-              <span className="hidden lg:inline">New Folder</span>
+              <FolderPlus size={18} className="animate-bounce" />
+              <span className="hidden lg:inline font-bold">NEW FOLDER</span>
+              <span className="lg:hidden">Folder</span>
             </button>
 
             <button
-              className="flex items-center gap-1 lg:gap-2 px-2 lg:px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="group flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-sky-500 to-blue-600 rounded-lg hover:from-sky-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               title="Upload Files"
               onClick={onUploadFilesClick}
               disabled={disabled || isLoading}
             >
-              <Upload size={16} />
-              <span className="hidden lg:inline">Upload</span>
+              <Upload size={18} className="group-hover:animate-bounce" />
+              <span className="hidden lg:inline font-bold">UPLOAD FILES</span>
+              <span className="lg:hidden">Upload</span>
+              <CloudUpload size={16} className="opacity-80" />
             </button>
 
             <input

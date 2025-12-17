@@ -5,6 +5,7 @@ import "./App.css";
 import Login from "./Login";
 import UsersPage from "./UsersPage";
 import Sidebar from "./components/Sidebar";
+import Pricing from "./Pricing";
 
 // Layout component for pages with sidebar
 const LayoutWithSidebar = ({ children }) => {
@@ -49,6 +50,11 @@ const RegisterWithAuthLayout = () => (
     <Register />
   </AuthLayout>
 );
+const PricingWithAuthLayout = () => (
+  <AuthLayout>
+    <Pricing />
+  </AuthLayout>
+);
 
 const router = createBrowserRouter([
   {
@@ -62,6 +68,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginWithAuthLayout />,
+  },
+  {
+    path: "/pricing",
+    element: <PricingWithAuthLayout />,
   },
   {
     path: "/users",
